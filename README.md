@@ -1,4 +1,4 @@
-# Biffy [![CI](https://github.com/winebarrel/Biffy/actions/workflows/ci.yml/badge.svg)](https://github.com/winebarrel/Biffy/actions/workflows/ci.yml)
+# Biffy [![CI](https://github.com/winebarrel/Biffy/actions/workflows/ci.yml/badge.svg)](https://github.com/winebarrel/Biffy/actions/workflows/ci.yml) [![AI Generated](https://img.shields.io/badge/AI%20Generated-Claude-orange?logo=anthropic)](https://claude.ai/claude-code)
 
 Biffy is a utility app that shows unread [Gmail](https://mail.google.com/) messages on the menu bar.
 
