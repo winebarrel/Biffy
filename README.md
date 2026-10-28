@@ -8,7 +8,7 @@ The name comes from [biff](https://en.wikipedia.org/wiki/Biff_(Unix)), the Unix 
 
 ### Show unread mails in your inbox
 
-![](https://github.com/user-attachments/assets/9e8fd148-667e-4022-99dc-caf549e0712d)
+![](popover.png)
 
 Clicking a mail opens the thread in your browser and marks it as read.
 
