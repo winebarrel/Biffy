@@ -3,7 +3,7 @@ import Foundation
 enum MIMEHeader {
     /// Parses raw header lines into a dictionary keyed by lowercased field name, decoding encoded-words.
     static func parse(_ data: Data) -> [String: String] {
-        let raw = String(data: data, encoding: .utf8) ?? String(decoding: data, as: UTF8.self)
+        let raw = data.lossyUTF8
         let unfolded = raw.replacingOccurrences(of: "\r\n", with: "\n")
             .replacingOccurrences(of: #"\n[ \t]+"#, with: " ", options: .regularExpression)
         var fields: [String: String] = [:]
@@ -20,15 +20,15 @@ enum MIMEHeader {
 
     /// Returns the display name of an address like `"Name" <addr>`, or the address itself.
     static func displayName(_ from: String) -> String {
-        guard let lt = from.firstIndex(of: "<") else {
+        guard let open = from.firstIndex(of: "<") else {
             return from
         }
 
-        let name = from[..<lt].trimmingCharacters(in: .whitespaces)
+        let name = from[..<open].trimmingCharacters(in: .whitespaces)
             .trimmingCharacters(in: CharacterSet(charactersIn: "\""))
 
         if name.isEmpty {
-            return from[from.index(after: lt)...].trimmingCharacters(in: CharacterSet(charactersIn: ">"))
+            return from[from.index(after: open)...].trimmingCharacters(in: CharacterSet(charactersIn: ">"))
         }
 
         return name
@@ -45,7 +45,7 @@ enum MIMEHeader {
 
         func flush() {
             if !pending.isEmpty {
-                result += String(data: pending, encoding: encoding(pendingCharset)) ?? String(decoding: pending, as: UTF8.self)
+                result += String(data: pending, encoding: encoding(pendingCharset)) ?? pending.lossyUTF8
                 pending = Data()
             }
         }
@@ -90,24 +90,31 @@ enum MIMEHeader {
         var idx = text.startIndex
 
         while idx < text.endIndex {
-            let ch = text[idx]
+            let char = text[idx]
 
-            if ch == "_" {
+            if char == "_" {
                 data.append(0x20)
-            } else if ch == "=", let end = text.index(idx, offsetBy: 3, limitedBy: text.endIndex),
-                      let byte = UInt8(text[text.index(after: idx) ..< end], radix: 16)
-            {
+            } else if char == "=", let byte = hexByte(text, at: idx) {
                 data.append(byte)
-                idx = end
+                idx = text.index(idx, offsetBy: 3)
                 continue
             } else {
-                data.append(contentsOf: Array(String(ch).utf8))
+                data.append(contentsOf: Array(String(char).utf8))
             }
 
             idx = text.index(after: idx)
         }
 
         return data
+    }
+
+    /// Parses "=XX" at the given index.
+    private static func hexByte(_ text: String, at idx: String.Index) -> UInt8? {
+        guard let end = text.index(idx, offsetBy: 3, limitedBy: text.endIndex) else {
+            return nil
+        }
+
+        return UInt8(text[text.index(after: idx) ..< end], radix: 16)
     }
 
     private static func encoding(_ charset: String) -> String.Encoding {

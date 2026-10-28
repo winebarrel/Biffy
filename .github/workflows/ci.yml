@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - uses: cirruslabs/swiftlint-action@v1
+        with:
+          version: latest
+          args: --strict
+
+  format:
+    name: Format
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Install SwiftFormat
+        run: brew install swiftformat
+      - name: Check formatting
+        run: swiftformat --lint Biffy
+
+  build:
+    name: Build and Analyse
+    runs-on: xcode-27
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Switch Xcode
+        # https://github.com/actions/runner-images/blob/main/images/macos/xcode-27-arm64-Readme.md#xcode
+        run: sudo xcode-select -s /Applications/Xcode_27.app
+      - name: Install SwiftLint
+        env:
+          SWIFTLINT_VERSION: 0.62.2
+        run: |
+          curl -sSfLO https://github.com/realm/SwiftLint/releases/download/${SWIFTLINT_VERSION}/portable_swiftlint.zip
+          unzip portable_swiftlint.zip swiftlint
+      - name: Build and Analyse
+        run: |
+          set -eo pipefail
+          xcodebuild build analyze -scheme Biffy -destination 'generic/platform=macOS' -configuration Debug CODE_SIGNING_ALLOWED=NO | tee build.log
+      - name: SwiftLint Analyse
+        run: |
+          ./swiftlint analyze --strict --compiler-log-path build.log
