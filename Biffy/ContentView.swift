@@ -5,6 +5,7 @@ struct ContentView: View {
     @Binding var email: String
     @Binding var appPassword: String
     @State private var hoverId: UInt32?
+    @State private var hoverReadButtonId: UInt32?
 
     var body: some View {
         VStack {
@@ -50,31 +51,50 @@ struct ContentView: View {
                 }
             } else {
                 List(gmail.mails) { mail in
-                    VStack(alignment: .leading) {
-                        Text(mail.from)
-                            .font(.caption)
-                            .fontWeight(.bold)
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(mail.from)
+                                .font(.caption)
+                                .fontWeight(.bold)
 
-                        HStack {
-                            Link(destination: URL(string: mail.url(email))!) {
-                                Text(mail.subject.isEmpty ? "(no subject)" : mail.subject)
-                                    .multilineTextAlignment(.leading)
-                                    .underline(hoverId == mail.id)
-                            }
-                            // NOTE: Since macOS 27, onHover inside a Link label is never called,
-                            // so handle hover on the Link itself.
-                            .onHover { hovering in
-                                hoverId = hovering ? mail.id : nil
-                            }
-                            .effectHoverCursor()
-                            .environment(\.openURL, OpenURLAction { _ in
-                                Task {
-                                    await gmail.markAsRead(GmailAPI(email: email, appPassword: appPassword), uid: mail.uid)
+                            HStack {
+                                Link(destination: URL(string: mail.url(email))!) {
+                                    Text(mail.subject.isEmpty ? "(no subject)" : mail.subject)
+                                        .multilineTextAlignment(.leading)
+                                        .underline(hoverId == mail.id)
                                 }
-                                return .systemAction
-                            })
-                            Text("(\(mail.date.relative()))").font(.caption2)
+                                // NOTE: Since macOS 27, onHover inside a Link label is never called,
+                                // so handle hover on the Link itself.
+                                .onHover { hovering in
+                                    hoverId = hovering ? mail.id : nil
+                                }
+                                .effectHoverCursor()
+                                .environment(\.openURL, OpenURLAction { _ in
+                                    Task {
+                                        await gmail.markAsRead(GmailAPI(email: email, appPassword: appPassword), uid: mail.uid)
+                                    }
+                                    return .systemAction
+                                })
+                                Text("(\(mail.date.relative()))").font(.caption2)
+                            }
                         }
+
+                        Spacer()
+
+                        Button {
+                            Task {
+                                await gmail.markAsRead(GmailAPI(email: email, appPassword: appPassword), uid: mail.uid)
+                            }
+                        } label: {
+                            Image(systemName: "checkmark.circle")
+                                .foregroundStyle(hoverReadButtonId == mail.id ? Color.accentColor : .secondary)
+                        }
+                        .buttonStyle(.borderless)
+                        .onHover { hovering in
+                            hoverReadButtonId = hovering ? mail.id : nil
+                        }
+                        .help("Mark as read")
+                        .effectHoverCursor()
                     }
                 }
             }
