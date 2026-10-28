@@ -13,7 +13,7 @@ class GmailModel: ObservableObject {
     @Published var status: Status = .noUnread
     @Published var updatedAt: Date?
     @Published var error: IMAPError?
-    // NOTE: Do not notify unread mails that already exist at launch.
+    /// Do not notify unread mails that already exist at launch.
     private var fetched = false
 
     func update(_ api: GmailAPI) async {

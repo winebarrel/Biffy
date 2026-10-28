@@ -133,7 +133,7 @@ actor IMAPClient {
             if let range = buffer.range(of: crlf) {
                 let line = buffer[..<range.lowerBound]
                 buffer = Data(buffer[range.upperBound...])
-                return String(decoding: line, as: UTF8.self)
+                return Data(line).lossyUTF8
             }
 
             try await fill()

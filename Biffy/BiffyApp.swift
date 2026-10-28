@@ -5,6 +5,8 @@ import SwiftUI
 @main
 struct BiffyApp: App {
     @State private var initialized = false
+    // NOTE: Only referenced via its projected value, which the analyzer does not count.
+    // swiftlint:disable:next unused_declaration
     @State private var isMenuPresented = false
     @State private var timer: Task<Void, Never>?
     @State private var clickHandler: StatusItemClickHandler?
@@ -14,9 +16,7 @@ struct BiffyApp: App {
     @AppStorage("interval") private var interval = Constants.defaultInterval
     @StateObject private var gmail = GmailModel()
 
-    // swiftlint:disable unused_declaration
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    // swiftlint:enable unused_declaration
 
     private var popover = {
         let pop = NSPopover()
