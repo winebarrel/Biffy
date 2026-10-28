@@ -8,13 +8,13 @@ The name comes from [biff](https://en.wikipedia.org/wiki/Biff_(Unix)), the Unix 
 
 ### Show unread mails in your inbox
 
-![](popover.png)
+![](https://github.com/user-attachments/assets/9e8fd148-667e-4022-99dc-caf549e0712d)
 
 Clicking a mail opens the thread in your browser and marks it as read.
 
 ### Notifications
 
-![](notification.png)
+![](https://github.com/user-attachments/assets/1b87c2d7-6cc0-4e00-ba58-1b016ac45fd8)
 
 Biffy notifies mails that arrive after launch. Clicking a notification also opens the thread and marks it as read.
 
@@ -22,9 +22,9 @@ Biffy notifies mails that arrive after launch. Clicking a notification also open
 
 | Icon | Status |
 | - | - |
-| ![](icon-envelope.png) | No unread mails |
-| ![](icon-envelope.fill.png) | Unread mails |
-| ![](icon-exclamationmark.triangle.png) | Error |
+| ![](https://github.com/user-attachments/assets/b6b00723-aa3c-46a4-b974-4c5c659494a7) | No unread mails |
+| ![](https://github.com/user-attachments/assets/2f09d526-f551-495b-9cb1-4514ac5f22b6) | Unread mails |
+| ![](https://github.com/user-attachments/assets/7b54b770-4426-4ef9-9235-5a5fd43bbf9d) | Error |
 
 ## Configuration
 
@@ -34,7 +34,7 @@ Biffy connects to Gmail via IMAP with an [app password](https://support.google.c
 2. Create an app password at https://myaccount.google.com/apppasswords.
 3. **Right-click menu** > **Settings**, then enter your Gmail address and the app password.
 
-![](settings.png)
+![](https://github.com/user-attachments/assets/0d8f22ca-64ee-4fc3-b53d-94db7a4cfd80)
 
 | Field | Value |
 | - | - |
